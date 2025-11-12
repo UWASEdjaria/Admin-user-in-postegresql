@@ -1,16 +1,43 @@
 import { NextResponse } from "next/server";
-import prisma from "../../lib/prisma"
+import prisma from '../../lib/prisma';
+import bcrypt from "bcryptjs";
+
 
 export async function POST(req: Request) {
-  const { name, email, gender, password, role } = await req.json();
-  const user = await prisma.user.create({
-    data: { name, email, gender, password, role },
-  });
-  return NextResponse.json(user);
+  try {
+    const { name, email, password,gender, role } = await req.json();
+
+
+    // Check if user exists
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+    if (existingUser) {
+      return NextResponse.json({ error: "User already exists" }, { status: 400 });
+    }
+
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+
+    // Save user
+    const user = await prisma.user.create({
+      data: { name, email, password: hashedPassword,gender, role },
+    });
+
+
+    return NextResponse.json({ message: "User created successfully", user });
+  } catch (error) {
+    console.error("Error creating user:", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
 }
+
 
 export async function GET() {
   const users = await prisma.user.findMany();
   return NextResponse.json(users);
 }
+
+
+
 
