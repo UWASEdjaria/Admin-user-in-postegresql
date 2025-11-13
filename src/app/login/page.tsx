@@ -33,7 +33,7 @@ export default function LoginPage() {
 
 
       alert("Login successful!");
-      router.push("/login"); // redirect
+      router.push("/dashboard"); // redirect
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {

@@ -1,9 +1,11 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 
 export default function RegisterPage() {
   const [form, setForm] = useState({ name: "", email: "", password: "", gender: "" , role: "USER" });
+  const router = useRouter();
 
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -14,6 +16,7 @@ export default function RegisterPage() {
       body: JSON.stringify(form),
     });
     alert("User created successfully!");
+    router.push("/login");
   };
 
 
